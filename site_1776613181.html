@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager | Premium SaaS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl border border-slate-100">
+        <h1 class="text-2xl font-bold text-slate-800 mb-6">Create New Task</h1>
+        
+        <form id="taskForm" class="space-y-6">
+            <!-- Project Selection -->
+            <div>
+                <label for="project_id" class="block text-sm font-medium text-slate-700 mb-2">Select Project</label>
+                <select id="project_id" name="project_id" required 
+                    class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none">
+                    <option value="">Loading projects...</option>
+                </select>
+            </div>
+
+            <!-- Task Title -->
+            <div>
+                <label for="title" class="block text-sm font-medium text-slate-700 mb-2">Task Title</label>
+                <input type="text" id="title" name="title" required placeholder="Enter task name"
+                    class="w-full p-3 border border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all outline-none">
+            </div>
+
+            <button type="submit" 
+                class="w-full bg-indigo-600 text-white font-semibold py-3 rounded-xl hover:opacity-80 transition-all shadow-lg shadow-indigo-200">
+                Create Task
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // Fetch projects on load
+        async function loadProjects() {
+            const select = document.getElementById('project_id');
+            try {
+                const response = await fetch('/api/projects');
+                const projects = await response.json();
+                select.innerHTML = '<option value="">Select a project</option>';
+                projects.forEach(p => {
+                    select.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+                });
+            } catch (err) {
+                console.error('Error loading projects:', err);
+            }
+        }
+
+        // Handle Form Submission
+        document.getElementById('taskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const payload = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/api/tasks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    alert('Task created successfully!');
+                    e.target.reset();
+                } else {
+                    alert('Failed to create task.');
+                }
+            } catch (err) {
+                console.error('Submission error:', err);
+            }
+        });
+
+        loadProjects();
+    </script>
+</body>
+</html>
