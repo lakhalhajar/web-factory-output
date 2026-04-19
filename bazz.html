@@ -1,0 +1,49 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<body>
+    <!-- Project Form -->
+    <form id="projectForm">
+        <input type="text" id="projectName" placeholder="Project Name" required>
+        <button type="submit">Create Project</button>
+    </form>
+
+    <!-- Task Form -->
+    <form id="taskForm">
+        <select id="taskProjectId" required></select>
+        <input type="text" id="taskTitle" placeholder="Task Title" required>
+        <input type="text" id="taskDesc" placeholder="Description" required>
+        <button type="submit">Create Task</button>
+    </form>
+
+    <script>
+        // Create Project
+        document.getElementById('projectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('projectName').value;
+            await fetch('/projects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name })
+            });
+            location.reload();
+        });
+
+        // Create Task
+        document.getElementById('taskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                project_id: document.getElementById('taskProjectId').value,
+                title: document.getElementById('taskTitle').value,
+                description: document.getElementById('taskDesc').value
+            };
+            await fetch('/tasks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            alert('Task Created');
+        });
+    </script>
+</body>
+</html>
