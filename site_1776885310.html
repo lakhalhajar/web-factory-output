@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .sidebar-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans">
+
+    <div class="flex min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-64 bg-slate-800 text-white p-6 flex flex-col">
+            <div class="flex items-center gap-2 mb-10">
+                <i data-lucide="layout-dashboard" class="text-indigo-400"></i>
+                <h1 class="text-xl font-bold">ProManager</h1>
+            </div>
+            <nav class="flex-1 space-y-4">
+                <a href="#" class="flex items-center gap-3 p-3 rounded-lg sidebar-item bg-indigo-600">
+                    <i data-lucide="briefcase"></i> Projects
+                </a>
+                <a href="#" class="flex items-center gap-3 p-3 rounded-lg sidebar-item">
+                    <i data-lucide="check-square"></i> Tasks
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <header class="mb-8">
+                <h2 class="text-3xl font-bold text-slate-800">Dashboard</h2>
+                <p class="text-slate-500">Manage your projects and tasks efficiently.</p>
+            </header>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Forms Section -->
+                <div class="lg:col-span-1 space-y-6">
+                    <!-- Add Project Form -->
+                    <div class="glass p-6 rounded-2xl shadow-xl">
+                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                            <i data-lucide="plus-circle" class="text-indigo-600"></i> New Project
+                        </h3>
+                        <form id="projectForm" class="space-y-4">
+                            <input type="text" id="projName" placeholder="Project Name" class="w-full p-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-600" required>
+                            <textarea id="projDesc" placeholder="Description" class="w-full p-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-600"></textarea>
+                            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-lg transition-all flex justify-center items-center gap-2">
+                                Create Project
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Add Task Form -->
+                    <div class="glass p-6 rounded-2xl shadow-xl">
+                        <h3 class="font-semibold text-lg mb-4 flex items-center gap-2">
+                            <i data-lucide="list-plus" class="text-emerald-500"></i> New Task
+                        </h3>
+                        <form id="taskForm" class="space-y-4">
+                            <select id="taskProjId" class="w-full p-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
+                                <option value="">Select Project</option>
+                            </select>
+                            <input type="text" id="taskTitle" placeholder="Task Title" class="w-full p-3 rounded-lg border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500" required>
+                            <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 rounded-lg transition-all">
+                                Add Task
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- List Section -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="glass p-6 rounded-2xl shadow-xl">
+                        <h3 class="font-semibold text-lg mb-6">Active Projects & Tasks</h3>
+                        <div id="dashboardContent" class="space-y-6">
+                            <!-- Dynamic Content -->
+                            <div class="text-center py-10 text-slate-400">Loading data...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // API Configuration - Adjust these URLs to match your actual backend environment
+        const API_BASE = 'https://bazz44-is3f4wkf8-lakhalhajar75-3482s-projects.vercel.app/api'; 
+        
+        // --- State ---
+        let projects = [];
+        let tasks = [];
+
+        // --- Fetch Data ---
+        async function fetchData() {
+            try {
+                const [projRes, taskRes] = await Promise.all([
+                    fetch(`${API_BASE}/projects`),
+                    fetch(`${API_BASE}/projects`)
+                ]);
+                projects = await projRes.json();
+                tasks = await taskRes.json();
+                render();
+            } catch (err) {
+                console.error("Error fetching data:", err);
+                document.getElementById('dashboardContent').innerHTML = `<div class="text-red-500 text-center">Failed to load data. Ensure backend is running.</div>`;
+            }
+        }
+
+        // --- Render UI ---
+        function render() {
+            const container = document.getElementById('dashboardContent');
+            const select = document.getElementById('taskProjId');
+            
+            // Update Select Dropdown
+            select.innerHTML = '<option value="">Select Project</option>';
+            projects.forEach(p => {
+                select.innerHTML += `<option value="${p.id}">${p.name}</option>`;
+            });
+
+            // Update List
+            if (projects.length === 0) {
+                container.innerHTML = '<p class="text-center text-slate-400">No projects found.</p>';
+                return;
+            }
+
+            container.innerHTML = projects.map(project => `
+                <div class="border-l-4 border-indigo-600 pl-4 mb-6">
+                    <h4 class="font-bold text-lg">${project.name}</h4>
+                    <p class="text-sm text-slate-500 mb-2">${project.description || ''}</p>
+                    <ul class="space-y-2 mt-2">
+                        ${tasks.filter(t => t.project_id == project.id).map(t => `
+                            <li class="flex items-center gap-2 bg-slate-50 p-2 rounded text-sm">
+                                <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500"></i>
+                                ${t.title}
+                            </li>
+                        `).join('') || '<li class="text-xs text-slate-400 italic">No tasks</li>'}
+                    </ul>
+                </div>
+            `).join('');
+            
+            lucide.createIcons();
+        }
+
+        // --- Event Handlers ---
+        document.getElementById('projectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.innerText = 'Creating...';
+
+            await fetch(`${API_BASE}/projects`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: document.getElementById('projName').value,
+                    description: document.getElementById('projDesc').value
+                })
+            });
+
+            btn.disabled = false;
+            btn.innerText = 'Create Project';
+            e.target.reset();
+            fetchData();
+        });
+
+        document.getElementById('taskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.innerText = 'Adding...';
+
+            await fetch(`${API_BASE}/tasks`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    project_id: document.getElementById('taskProjId').value,
+                    title: document.getElementById('taskTitle').value
+                })
+            });
+
+            btn.disabled = false;
+            btn.innerText = 'Add Task';
+            e.target.reset();
+            fetchData();
+        });
+
+        // Initialize
+        fetchData();
+    </script>
+</body>
+</html>
