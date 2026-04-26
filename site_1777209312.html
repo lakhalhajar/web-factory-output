@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architect Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        const API_BASE = 'https://bazz44-api.vercel.app';
+        const site_tag = 'architect';
+    </script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-8">
+
+    <div x-data="{ 
+        projects: [], 
+        name: '', 
+        description: '', 
+        image_url: '',
+        async fetchProjects() {
+            try {
+                const res = await fetch(`${API_BASE}/api/projects?site_tag=${site_tag}`);
+                this.projects = await res.json();
+            } catch (e) { console.error('Fetch error:', e); }
+        },
+        async addProject() {
+            try {
+                const res = await fetch(`${API_BASE}/api/projects`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        name: this.name, 
+                        description: this.description, 
+                        image_url: this.image_url, 
+                        site_tag: site_tag 
+                    })
+                });
+                if (res.ok) {
+                    this.name = ''; this.description = ''; this.image_url = '';
+                    this.fetchProjects();
+                }
+            } catch (e) { console.error('Post error:', e); }
+        }
+    }" x-init="fetchProjects()" class="max-w-6xl mx-auto">
+
+        <!-- Header -->
+        <header class="mb-10 text-center">
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">Architect Dashboard</h1>
+            <p class="text-slate-400 mt-2">Manage your structural portfolio</p>
+        </header>
+
+        <!-- Form Section -->
+        <section class="bg-slate-900/50 backdrop-blur-lg border border-slate-700 p-6 rounded-2xl mb-12 shadow-2xl">
+            <h2 class="text-xl font-semibold mb-6">Add New Project</h2>
+            <form @submit.prevent="addProject" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <input x-model="name" type="text" placeholder="Project Name" class="bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input x-model="image_url" type="url" placeholder="Image URL" class="bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <textarea x-model="description" placeholder="Description" class="md:col-span-2 bg-slate-800 border border-slate-700 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500" required></textarea>
+                <button type="submit" class="md:col-span-2 bg-blue-600 hover:bg-blue-500 transition-colors py-3 rounded-lg font-bold">Add Project</button>
+            </form>
+        </section>
+
+        <!-- Grid Section -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <template x-for="project in projects" :key="project.id || project.name">
+                <div class="bg-slate-900/50 backdrop-blur-md border border-slate-700 rounded-2xl overflow-hidden hover:border-blue-500 transition-all shadow-lg">
+                    <img :src="project.image_url" :alt="project.name" class="w-full h-48 object-cover">
+                    <div class="p-5">
+                        <h3 class="text-lg font-bold mb-2" x-text="project.name"></h3>
+                        <p class="text-slate-400 text-sm" x-text="project.description"></p>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+    </div>
+
+</body>
+</html>
