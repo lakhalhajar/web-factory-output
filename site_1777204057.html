@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        body {
+            background: radial-gradient(circle at top right, #1e293b, #0f172a);
+            min-height: 100vh;
+            color: white;
+        }
+    </style>
+</head>
+<body class="p-6">
+
+    <div x-data="dashboard()" x-init="fetchProjects()" class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-emerald-400">
+                    Project Dashboard
+                </h1>
+                <p class="text-slate-400">Manage your site assets efficiently</p>
+            </div>
+            <button @click="isModalOpen = true" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-all">
+                <i data-lucide="plus" class="w-4 h-4"></i> Add Project
+            </button>
+        </header>
+
+        <!-- Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <template x-for="project in projects" :key="project.id">
+                <div class="glass p-6 rounded-2xl hover:scale-105 transition-transform duration-300">
+                    <img :src="project.image_url" alt="Project Image" class="w-full h-40 object-cover rounded-xl mb-4 bg-slate-800">
+                    <h3 class="text-xl font-semibold mb-2" x-text="project.name"></h3>
+                    <p class="text-slate-400 text-sm" x-text="project.description"></p>
+                </div>
+            </template>
+        </div>
+
+        <!-- Modal -->
+        <div x-show="isModalOpen" class="fixed inset-0 bg-black/50 flex items-center justify-center p-4" x-cloak>
+            <div class="glass p-8 rounded-2xl w-full max-w-md">
+                <h2 class="text-xl font-bold mb-4">New Project</h2>
+                <form @submit.prevent="saveProject">
+                    <input x-model="newProject.name" type="text" placeholder="Project Name" class="w-full p-3 mb-4 bg-white/5 rounded-lg border border-white/10 outline-none" required>
+                    <input x-model="newProject.description" type="text" placeholder="Description" class="w-full p-3 mb-4 bg-white/5 rounded-lg border border-white/10 outline-none" required>
+                    <input x-model="newProject.image_url" type="text" placeholder="Image URL" class="w-full p-3 mb-4 bg-white/5 rounded-lg border border-white/10 outline-none" required>
+                    <div class="flex justify-end gap-3">
+                        <button type="button" @click="isModalOpen = false" class="px-4 py-2 text-slate-400">Cancel</button>
+                        <button type="submit" class="px-4 py-2 bg-emerald-600 rounded-lg">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://bazz44-cn2s3etp7-lakhalhajar75-3482s-projects.vercel.app/api';
+        const SITE_NAME = "Project Dashboard";
+        const site_tag = SITE_NAME.toLowerCase().replace(/\s+/g, '_');
+
+        function dashboard() {
+            return {
+                projects: [],
+                isModalOpen: false,
+                newProject: { name: '', description: '', image_url: '' },
+
+                async fetchProjects() {
+                    try {
+                        const response = await fetch(`${API_BASE}/api/projects?site_tag=${site_tag}`);
+                        this.projects = await response.json();
+                        this.$nextTick(() => lucide.createIcons());
+                    } catch (e) {
+                        console.error("Failed to fetch:", e);
+                    }
+                },
+
+                async saveProject() {
+                    try {
+                        const response = await fetch(`${API_BASE}/api/projects`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                name: this.newProject.name,
+                                description: this.newProject.description,
+                                image_url: this.newProject.image_url,
+                                site_tag: site_tag
+                            })
+                        });
+                        if (response.ok) {
+                            this.isModalOpen = false;
+                            this.fetchProjects();
+                            this.newProject = { name: '', description: '', image_url: '' };
+                        }
+                    } catch (e) {
+                        console.error("Failed to save:", e);
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
