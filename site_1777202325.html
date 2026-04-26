@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architect Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(15px);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
+
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 glass-dark border-r border-slate-800 p-6 hidden md:flex flex-col">
+            <div class="flex items-center gap-2 mb-10">
+                <i data-lucide="layout-dashboard" class="text-blue-500"></i>
+                <h1 class="text-xl font-bold tracking-tight">ArchitectUI</h1>
+            </div>
+            <nav class="space-y-4">
+                <a href="#" class="flex items-center gap-3 text-blue-400 bg-blue-500/10 p-3 rounded-lg">
+                    <i data-lucide="database"></i> Projects
+                </a>
+                <a href="#" class="flex items-center gap-3 text-slate-400 hover:text-white p-3 transition-colors">
+                    <i data-lucide="settings"></i> Settings
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-8">
+            <header class="mb-8 flex justify-between items-center">
+                <div>
+                    <h2 class="text-3xl font-bold">Project Management</h2>
+                    <p class="text-slate-400">Manage your architectural data assets</p>
+                </div>
+                <button onclick="toggleModal()" class="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg flex items-center gap-2 transition-all">
+                    <i data-lucide="plus"></i> Add Project
+                </button>
+            </header>
+
+            <!-- Data Table -->
+            <div class="glass rounded-xl overflow-hidden">
+                <table class="w-full text-left">
+                    <thead class="bg-white/5 border-b border-white/10">
+                        <tr>
+                            <th class="p-4 font-semibold">Name</th>
+                            <th class="p-4 font-semibold">Description</th>
+                            <th class="p-4 font-semibold">Image URL</th>
+                            <th class="p-4 font-semibold text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="projectTableBody" class="divide-y divide-white/10">
+                        <!-- Data injected here -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Modal -->
+    <div id="modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center z-50">
+        <div class="glass p-8 rounded-2xl w-full max-w-md">
+            <h3 class="text-xl font-bold mb-6">New Project</h3>
+            <form id="projectForm" class="space-y-4">
+                <input type="text" id="name" placeholder="Name" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="text" id="description" placeholder="Description" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <input type="url" id="image_url" placeholder="Image URL" class="w-full bg-slate-900 border border-slate-700 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                <div class="flex gap-3 pt-4">
+                    <button type="button" onclick="toggleModal()" class="flex-1 px-4 py-2 bg-slate-800 rounded-lg">Cancel</button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-blue-600 rounded-lg">Save Project</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://bazz44-66dfagr3e-lakhalhajar75-3482s-projects.vercel.app/api';
+        const SITE_TAG = 'architect_dashboard'; // Extracted from project name
+
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Fetch Data
+        async function fetchProjects() {
+            try {
+                const response = await fetch(`${API_BASE}/api/projects?site_tag=${SITE_TAG}`);
+                const data = await response.json();
+                renderTable(data);
+            } catch (error) {
+                console.error('Error fetching projects:', error);
+            }
+        }
+
+        // Render Table
+        function renderTable(projects) {
+            const tbody = document.getElementById('projectTableBody');
+            tbody.innerHTML = projects.map(p => `
+                <tr class="hover:bg-white/5 transition-colors">
+                    <td class="p-4 font-medium">${p.name}</td>
+                    <td class="p-4 text-slate-400">${p.description}</td>
+                    <td class="p-4"><a href="${p.image_url}" target="_blank" class="text-blue-400 hover:underline">View Image</a></td>
+                    <td class="p-4 text-right">
+                        <button class="text-slate-400 hover:text-red-400"><i data-lucide="trash-2"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        // Submit Data
+        document.getElementById('projectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('name').value,
+                description: document.getElementById('description').value,
+                image_url: document.getElementById('image_url').value,
+                site_tag: SITE_TAG
+            };
+
+            try {
+                await fetch(`${API_BASE}/api/projects`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                toggleModal();
+                fetchProjects();
+            } catch (error) {
+                console.error('Error saving project:', error);
+            }
+        });
+
+        function toggleModal() {
+            document.getElementById('modal').classList.toggle('hidden');
+        }
+
+        // Initial Load
+        fetchProjects();
+    </script>
+</body>
+</html>
