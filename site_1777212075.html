@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architect Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        .glass {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen font-sans">
+
+    <div x-data="dashboard()" class="max-w-6xl mx-auto p-6">
+        <!-- Header -->
+        <header class="mb-10">
+            <h1 class="text-4xl font-light tracking-tight text-white">Architectural Portfolio</h1>
+            <p class="text-slate-400 mt-2">Manage and showcase your structural designs.</p>
+        </header>
+
+        <!-- Input Section -->
+        <section class="glass rounded-2xl p-8 mb-12">
+            <h2 class="text-xl font-medium mb-6">Add New Project</h2>
+            <form @submit.prevent="addProject" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <input type="text" x-model="newProject.name" placeholder="Project Name" required class="bg-slate-900/50 border border-slate-700 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-slate-500">
+                <input type="url" x-model="newProject.image_url" placeholder="Image URL" required class="bg-slate-900/50 border border-slate-700 rounded-lg p-3 w-full focus:outline-none focus:ring-2 focus:ring-slate-500">
+                <textarea x-model="newProject.description" placeholder="Description" required class="bg-slate-900/50 border border-slate-700 rounded-lg p-3 w-full md:col-span-2 focus:outline-none focus:ring-2 focus:ring-slate-500"></textarea>
+                <button type="submit" class="bg-white text-slate-900 font-semibold py-3 px-6 rounded-lg hover:bg-slate-200 transition duration-200">Submit Project</button>
+            </form>
+        </section>
+
+        <!-- Projects Grid -->
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <template x-for="project in projects" :key="project.id">
+                <div class="glass rounded-2xl overflow-hidden hover:scale-105 transition-transform duration-300">
+                    <img :src="project.image_url" :alt="project.name" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2" x-text="project.name"></h3>
+                        <p class="text-slate-400 text-sm" x-text="project.description"></p>
+                    </div>
+                </div>
+            </template>
+        </section>
+    </div>
+
+    <script>
+        const API_BASE = 'https://bazz44-api.vercel.app';
+        const site_tag = 'architect';
+
+        function dashboard() {
+            return {
+                projects: [],
+                newProject: {
+                    name: '',
+                    description: '',
+                    image_url: ''
+                },
+                
+                async init() {
+                    await this.fetchProjects();
+                },
+
+                async fetchProjects() {
+                    try {
+                        const response = await fetch(`${API_BASE}/api/projects?site_tag=${site_tag}`);
+                        if (response.ok) {
+                            this.projects = await response.json();
+                        }
+                    } catch (error) {
+                        console.error('Error fetching projects:', error);
+                    }
+                },
+
+                async addProject() {
+                    try {
+                        const response = await fetch(`${API_BASE}/api/projects`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                name: this.newProject.name,
+                                description: this.newProject.description,
+                                image_url: this.newProject.image_url,
+                                site_tag: site_tag
+                            })
+                        });
+
+                        if (response.ok) {
+                            this.newProject = { name: '', description: '', image_url: '' };
+                            await this.fetchProjects();
+                        }
+                    } catch (error) {
+                        console.error('Error adding project:', error);
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
