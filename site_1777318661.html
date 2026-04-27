@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architect Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen font-sans">
+
+    <div x-data="dashboard()" x-init="fetchProjects()" class="max-w-7xl mx-auto p-6">
+        
+        <!-- Header -->
+        <header class="mb-12">
+            <h1 class="text-4xl font-bold tracking-tight text-white">Project Dashboard</h1>
+            <p class="text-zinc-400 mt-2">Manage architectural portfolio and site assets.</p>
+        </header>
+
+        <!-- Input Form -->
+        <section class="bg-zinc-900/50 backdrop-blur-xl border border-zinc-800 p-8 rounded-2xl mb-12 shadow-2xl">
+            <form @submit.prevent="addProject()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-zinc-500 mb-2">Project Name</label>
+                    <input type="text" x-model="formData.name" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-zinc-500 mb-2">Description</label>
+                    <input type="text" x-model="formData.description" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase text-zinc-500 mb-2">Image URL</label>
+                    <input type="url" x-model="formData.image_url" required class="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 outline-none">
+                </div>
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 px-6 rounded-lg transition-all">
+                    Add Project
+                </button>
+            </form>
+        </section>
+
+        <!-- Grid View -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <template x-for="project in projects" :key="project.id">
+                <div class="bg-zinc-900/40 backdrop-blur-lg border border-zinc-800/60 rounded-2xl overflow-hidden hover:border-indigo-500/50 transition-all group">
+                    <div class="h-48 overflow-hidden">
+                        <img :src="project.image_url" :alt="project.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2" x-text="project.name"></h3>
+                        <p class="text-zinc-400 text-sm" x-text="project.description"></p>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://bazz44-api.vercel.app';
+        const site_tag = 'architect';
+
+        function dashboard() {
+            return {
+                projects: [],
+                formData: {
+                    name: '',
+                    description: '',
+                    image_url: ''
+                },
+
+                async fetchProjects() {
+                    try {
+                        const response = await fetch(`${API_BASE}/api/projects?site_tag=${site_tag}`);
+                        this.projects = await response.json();
+                    } catch (error) {
+                        console.error('Error fetching projects:', error);
+                    }
+                },
+
+                async addProject() {
+                    const payload = {
+                        name: this.formData.name,
+                        description: this.formData.description,
+                        image_url: this.formData.image_url,
+                        site_tag: site_tag
+                    };
+
+                    try {
+                        const response = await fetch(`${API_BASE}/api/projects`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(payload)
+                        });
+
+                        if (response.ok) {
+                            this.formData = { name: '', description: '', image_url: '' };
+                            await this.fetchProjects();
+                        }
+                    } catch (error) {
+                        console.error('Error adding project:', error);
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
