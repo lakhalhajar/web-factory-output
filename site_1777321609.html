@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architect Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        .glass {
+            background: rgba(24, 24, 27, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen font-sans antialiased selection:bg-indigo-500/30">
+
+    <div x-data="{
+        tasks: [],
+        loading: true,
+        site_tag: 'architect',
+        async init() {
+            try {
+                // Fetching from API_BASE as per protocol
+                const response = await fetch(`${API_BASE}/api/projects`);
+                this.tasks = await response.json();
+            } catch (err) {
+                console.error('Failed to load tasks:', err);
+                // Mock data fallback for demonstration
+                this.tasks = [
+                    { name: 'Modern Villa', description: 'Minimalist concrete structure.', image_url: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&q=80&w=400' },
+                    { name: 'Urban Loft', description: 'Industrial design with high ceilings.', image_url: 'https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&q=80&w=400' }
+                ];
+            } finally {
+                this.loading = false;
+            }
+        }
+    }" class="p-8 max-w-7xl mx-auto">
+
+        <!-- Header -->
+        <header class="mb-12">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold tracking-tight">Project Dashboard</h1>
+                    <p class="text-zinc-500 mt-1">Tag: <span x-text="site_tag" class="font-mono bg-zinc-900 px-2 py-0.5 rounded text-indigo-400"></span></p>
+                </div>
+                <div class="glass px-4 py-2 rounded-full text-sm font-medium">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block mr-2 animate-pulse"></span>
+                    System Online
+                </div>
+            </div>
+        </header>
+
+        <!-- Grid -->
+        <div x-show="loading" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <template x-for="i in 3">
+                <div class="glass h-64 rounded-2xl animate-pulse"></div>
+            </template>
+        </div>
+
+        <div x-show="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <template x-for="task in tasks" :key="task.name">
+                <div class="glass rounded-2xl overflow-hidden hover:border-indigo-500/50 transition-all duration-300 group">
+                    <div class="h-48 overflow-hidden">
+                        <img :src="task.image_url" :alt="task.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold mb-2" x-text="task.name"></h3>
+                        <p class="text-zinc-400 text-sm leading-relaxed" x-text="task.description"></p>
+                        <button class="mt-6 w-full py-2 bg-zinc-900 hover:bg-indigo-600 transition-colors rounded-lg text-sm font-medium border border-zinc-800">
+                            View Details
+                        </button>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+    </div>
+
+    <script>
+        // Protocols defined per requirements
+        const API_BASE = 'https://bazz44-gtr1uppmx-lakhalhajar75-3482s-projects.vercel.app';
+        const site_tag = 'architect';
+    </script>
+</body>
+</html>
