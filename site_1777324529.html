@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-zinc-950 text-zinc-200">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architect Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        .glass {
+            background: rgba(24, 24, 27, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(63, 63, 70, 0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen font-sans">
+
+    <script>
+        const API_BASE = 'https://bazz44-64mjt0s57-lakhalhajar75-3482s-projects.vercel.app';
+        const site_tag = 'architect';
+    </script>
+
+    <div x-data="{
+        tasks: [],
+        loading: true,
+        init() {
+            fetch(`${API_BASE}/api/projects`)
+                .then(response => response.json())
+                .then(data => {
+                    this.tasks = data;
+                    this.loading = false;
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    this.loading = false;
+                });
+        }
+    }" class="flex flex-col md:flex-row min-h-screen">
+
+        <!-- Sidebar -->
+        <aside class="w-full md:w-64 glass p-6 flex flex-col gap-8">
+            <div class="text-xl font-bold text-white tracking-widest uppercase" x-text="site_tag"></div>
+            <nav class="space-y-4">
+                <a href="#" class="block p-2 rounded hover:bg-zinc-800 transition">Dashboard</a>
+                <a href="#" class="block p-2 rounded hover:bg-zinc-800 transition">Projects</a>
+                <a href="#" class="block p-2 rounded hover:bg-zinc-800 transition">Settings</a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-8">
+            <header class="mb-8">
+                <h1 class="text-3xl font-light text-zinc-100">Project Overview</h1>
+                <p class="text-zinc-500">Manage your architectural tasks and visual assets.</p>
+            </header>
+
+            <!-- Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <template x-for="task in tasks" :key="task.id">
+                    <div class="glass rounded-2xl overflow-hidden hover:border-zinc-500 transition duration-300">
+                        <img :src="task.image_url" :alt="task.name" class="w-full h-48 object-cover">
+                        <div class="p-5">
+                            <h2 class="text-lg font-semibold text-white mb-2" x-text="task.name"></h2>
+                            <p class="text-sm text-zinc-400 leading-relaxed" x-text="task.description"></p>
+                        </div>
+                    </div>
+                </template>
+
+                <!-- Loading State -->
+                <template x-if="loading">
+                    <div class="col-span-full text-center py-20 text-zinc-500">
+                        Loading architectural data...
+                    </div>
+                </template>
+
+                <!-- Empty State -->
+                <template x-if="!loading && tasks.length === 0">
+                    <div class="col-span-full text-center py-20 text-zinc-500">
+                        No projects found.
+                    </div>
+                </template>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
