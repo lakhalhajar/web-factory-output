@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architect Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans">
+
+    <div x-data="dashboard()" x-init="fetchProjects()" class="max-w-7xl mx-auto px-4 py-12">
+        <header class="mb-12 text-center">
+            <h1 class="text-4xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">Architect Portfolio Dashboard</h1>
+            <p class="text-slate-400 mt-2">Manage your architectural projects with precision.</p>
+        </header>
+
+        <!-- Form Section -->
+        <section class="glass rounded-2xl p-8 mb-12">
+            <h2 class="text-xl font-semibold mb-6">Add New Project</h2>
+            <form @submit.prevent="submitProject()" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <input type="text" x-model="form.name" placeholder="Project Name" class="bg-slate-900 border border-slate-700 rounded-lg p-3 outline-none focus:border-indigo-500" required>
+                <input type="text" x-model="form.description" placeholder="Description" class="bg-slate-900 border border-slate-700 rounded-lg p-3 outline-none focus:border-indigo-500" required>
+                <input type="url" x-model="form.image_url" placeholder="Image URL" class="bg-slate-900 border border-slate-700 rounded-lg p-3 outline-none focus:border-indigo-500" required>
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-500 transition-colors rounded-lg font-semibold py-3 px-6">Add Project</button>
+            </form>
+        </section>
+
+        <!-- Projects Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <template x-for="project in projects" :key="project.id || project.name">
+                <div class="glass rounded-2xl overflow-hidden hover:scale-[1.02] transition-transform">
+                    <img :src="project.image_url" :alt="project.name" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2" x-text="project.name"></h3>
+                        <p class="text-slate-400 text-sm" x-text="project.description"></p>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://bazz44-api.vercel.app';
+        const site_tag = 'architect';
+
+        function dashboard() {
+            return {
+                projects: [],
+                form: {
+                    name: '',
+                    description: '',
+                    image_url: ''
+                },
+                async fetchProjects() {
+                    try {
+                        const response = await fetch(`${API_BASE}/api/projects?site_tag=${site_tag}`);
+                        this.projects = await response.json();
+                    } catch (error) {
+                        console.error('Error fetching projects:', error);
+                    }
+                },
+                async submitProject() {
+                    try {
+                        const response = await fetch(`${API_BASE}/api/projects`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                name: this.form.name,
+                                description: this.form.description,
+                                image_url: this.form.image_url,
+                                site_tag: site_tag
+                            })
+                        });
+
+                        if (response.ok) {
+                            this.form = { name: '', description: '', image_url: '' };
+                            this.fetchProjects();
+                        }
+                    } catch (error) {
+                        console.error('Error submitting project:', error);
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>
