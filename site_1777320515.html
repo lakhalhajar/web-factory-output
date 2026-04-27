@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architect Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        const API_BASE = 'https://bazz44-elynhz8h9-lakhalhajar75-3482s-projects.vercel.app';
+        const site_tag = 'architect';
+    </script>
+    <style>
+        .glass {
+            background: rgba(24, 24, 27, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen font-sans">
+
+    <div x-data="{ 
+        tasks: [], 
+        loading: true,
+        init() {
+            fetch(`${API_BASE}/api/projects`)
+                .then(res => res.json())
+                .then(data => {
+                    this.tasks = data;
+                    this.loading = false;
+                })
+                .catch(err => {
+                    console.error('Fetch error:', err);
+                    this.loading = false;
+                });
+        }
+    }" class="p-8">
+
+        <!-- Header -->
+        <header class="mb-10">
+            <h1 class="text-3xl font-bold tracking-tight text-white">Project Overview</h1>
+            <p class="text-zinc-400 mt-2">Managing assets under tag: <span class="font-mono text-zinc-200" x-text="site_tag"></span></p>
+        </header>
+
+        <!-- Loading State -->
+        <div x-show="loading" class="flex justify-center items-center h-64">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+        </div>
+
+        <!-- Grid -->
+        <div x-show="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <template x-for="task in tasks" :key="task.id">
+                <div class="glass rounded-2xl overflow-hidden hover:border-zinc-500 transition-all duration-300">
+                    <div class="h-48 w-full bg-zinc-800 overflow-hidden">
+                        <img :src="task.image_url" :alt="task.name" class="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity">
+                    </div>
+                    <div class="p-6">
+                        <h2 class="text-xl font-semibold mb-2" x-text="task.name"></h2>
+                        <p class="text-zinc-400 text-sm line-clamp-3" x-text="task.description"></p>
+                    </div>
+                </div>
+            </template>
+        </div>
+
+        <!-- Empty State -->
+        <div x-show="!loading && tasks.length === 0" class="text-center py-20">
+            <p class="text-zinc-500">No projects found.</p>
+        </div>
+
+    </div>
+</body>
+</html>
