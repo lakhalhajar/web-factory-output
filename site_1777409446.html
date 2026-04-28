@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-zinc-950 text-zinc-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architect Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        .glass {
+            background: rgba(24, 24, 27, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(63, 63, 70, 0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-8">
+
+    <div x-data="dashboard()" class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <header class="mb-10 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight">Project Overview</h1>
+                <p class="text-zinc-400" x-text="site_tag"></p>
+            </div>
+            <button @click="fetchTasks" class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-sm transition-colors">
+                Refresh Data
+            </button>
+        </header>
+
+        <!-- Loading State -->
+        <div x-show="loading" class="flex justify-center py-20">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        </div>
+
+        <!-- Error State -->
+        <div x-show="error" class="glass p-6 text-red-400 rounded-xl" x-text="error"></div>
+
+        <!-- Grid -->
+        <div x-show="!loading && !error" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <template x-for="task in tasks" :key="task.id">
+                <div class="glass rounded-2xl p-6 hover:border-zinc-500 transition-all duration-300">
+                    <img :src="task.image_url" :alt="task.name" class="w-full h-40 object-cover rounded-lg mb-4 bg-zinc-800">
+                    <h2 class="text-xl font-semibold mb-2" x-text="task.name"></h2>
+                    <p class="text-zinc-400 text-sm" x-text="task.description"></p>
+                </div>
+            </template>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://bazz44-api.vercel.app';
+        const site_tag = 'architect';
+
+        function dashboard() {
+            return {
+                tasks: [],
+                loading: true,
+                error: null,
+                
+                async fetchTasks() {
+                    this.loading = true;
+                    this.error = null;
+                    try {
+                        const response = await fetch(`${API_BASE}/api/projects`);
+                        if (!response.ok) throw new Error('Failed to fetch tasks');
+                        this.tasks = await response.json();
+                    } catch (e) {
+                        this.error = e.message;
+                    } finally {
+                        this.loading = false;
+                    }
+                },
+                
+                init() {
+                    this.fetchTasks();
+                }
+            }
+        }
+    </script>
+</body>
+</html>
