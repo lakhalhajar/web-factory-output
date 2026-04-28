@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-zinc-950 text-zinc-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architect Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen p-8">
+
+    <div x-data="{ 
+        tasks: [], 
+        loading: true, 
+        site_tag: 'architect',
+        init() { 
+            const API_BASE = 'https://bazz44-klcxw2oqx-lakhalhajar75-3482s-projects.vercel.app'; 
+            fetch(`${API_BASE}/api/projects`)
+                .then(response => response.json())
+                .then(data => { 
+                    this.tasks = data; 
+                    this.loading = false; 
+                })
+                .catch(err => { 
+                    console.error('Fetch error:', err);
+                    this.loading = false; 
+                });
+        } 
+    }" class="max-w-6xl mx-auto">
+
+        <!-- Header -->
+        <header class="mb-12 flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight text-white uppercase" x-text="site_tag"></h1>
+                <p class="text-zinc-500">Project Management Overview</p>
+            </div>
+            <div class="h-10 w-10 rounded-full bg-zinc-800 flex items-center justify-center border border-zinc-700">
+                <span class="text-xs font-bold">AD</span>
+            </div>
+        </header>
+
+        <!-- Loading State -->
+        <div x-show="loading" class="flex justify-center items-center h-64">
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        </div>
+
+        <!-- Grid -->
+        <div x-show="!loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <template x-for="task in tasks" :key="task.id">
+                <div class="glass rounded-2xl p-6 transition-all hover:bg-zinc-800/50 hover:border-zinc-700">
+                    <img :src="task.image_url" :alt="task.name" class="w-full h-40 object-cover rounded-lg mb-4 opacity-90">
+                    <h2 class="text-xl font-semibold text-white mb-2" x-text="task.name"></h2>
+                    <p class="text-zinc-400 text-sm leading-relaxed" x-text="task.description"></p>
+                </div>
+            </template>
+        </div>
+
+        <!-- Empty State -->
+        <div x-show="!loading && tasks.length === 0" class="text-center py-20">
+            <p class="text-zinc-600">No projects found.</p>
+        </div>
+
+    </div>
+
+</body>
+</html>
