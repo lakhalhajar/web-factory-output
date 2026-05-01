@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Architecture | Modern Living Spaces</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .mesh-gradient { background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%); }
+        .bento-item { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .bento-item:hover { transform: scale(1.02); }
+    </style>
+</head>
+<body class="bg-[#0f172a] text-white selection:bg-indigo-500">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 px-6 py-6 flex justify-between items-center glass">
+        <div class="text-2xl font-bold tracking-tighter">AURA<span class="text-indigo-500">.</span></div>
+        <div class="hidden md:flex gap-8 text-sm uppercase tracking-widest font-medium">
+            <a href="#work" class="hover:text-indigo-400 transition">Portfolio</a>
+            <a href="#about" class="hover:text-indigo-400 transition">Philosophy</a>
+            <a href="#" class="hover:text-indigo-400 transition">Contact</a>
+        </div>
+        <button class="px-6 py-2 bg-white text-black rounded-full text-sm font-bold hover:bg-indigo-500 hover:text-white transition">Inquire</button>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="relative h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2000')] bg-cover bg-center opacity-40"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-[#0f172a]"></div>
+        <div class="relative z-10 text-center px-4">
+            <span class="text-indigo-400 tracking-[0.3em] uppercase text-sm mb-4 block">Est. 2024</span>
+            <h1 class="text-6xl md:text-8xl mb-6 leading-tight">Sculpting Urban <br> <span class="italic text-gray-400">Masterpieces</span></h1>
+            <p class="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10">Where brutalist precision meets organic flow. We redefine the skyline with sustainable luxury.</p>
+            <a href="#work" class="px-8 py-4 bg-indigo-600 rounded-full font-semibold hover:bg-indigo-700 transition shadow-[0_0_20px_rgba(79,70,229,0.5)]">View Projects</a>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section class="py-24 px-6 max-w-7xl mx-auto">
+        <div class="grid md:grid-cols-3 gap-12">
+            <div class="p-8 rounded-2xl glass hover:border-indigo-500/50 transition duration-500">
+                <i data-lucide="compass" class="w-10 h-10 text-indigo-500 mb-6"></i>
+                <h3 class="text-2xl mb-4">Spatial Strategy</h3>
+                <p class="text-gray-400">Optimizing flow and functionality through rigorous spatial planning and geometric precision.</p>
+            </div>
+            <div class="p-8 rounded-2xl glass hover:border-indigo-500/50 transition duration-500">
+                <i data-lucide="leaf" class="w-10 h-10 text-indigo-500 mb-6"></i>
+                <h3 class="text-2xl mb-4">Sustainable Soul</h3>
+                <p class="text-gray-400">Integrating eco-conscious materials without compromising on high-end aesthetic luxury.</p>
+            </div>
+            <div class="p-8 rounded-2xl glass hover:border-indigo-500/50 transition duration-500">
+                <i data-lucide="layers" class="w-10 h-10 text-indigo-500 mb-6"></i>
+                <h3 class="text-2xl mb-4">Materiality</h3>
+                <p class="text-gray-400">Curating textures, light, and shadows to create immersive architectural experiences.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bento Grid Showcase -->
+    <section id="work" class="py-24 px-6 max-w-7xl mx-auto">
+        <h2 class="text-5xl mb-16 text-center">Selected Works</h2>
+        <div id="bento-grid" class="grid grid-cols-1 md:grid-cols-4 gap-4 auto-rows-[300px]">
+            <!-- Dynamic Injection via API -->
+            <div class="md:col-span-2 md:row-span-2 rounded-3xl overflow-hidden glass animate-pulse"></div>
+            <div class="md:col-span-2 rounded-3xl overflow-hidden glass animate-pulse"></div>
+            <div class="md:col-span-1 rounded-3xl overflow-hidden glass animate-pulse"></div>
+            <div class="md:col-span-1 rounded-3xl overflow-hidden glass animate-pulse"></div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 px-6 bg-white text-slate-900">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-16">
+            <div class="w-full md:w-1/2">
+                <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=1000" alt="Architecture" class="rounded-2xl shadow-2xl">
+            </div>
+            <div class="w-full md:w-1/2">
+                <h2 class="text-5xl mb-6">Architecture as Art</h2>
+                <p class="text-lg text-slate-600 mb-6 leading-relaxed">We believe that every structure should tell a story. By merging raw industrial elements with soft, human-centric design, we create environments that don't just house people, but inspire them.</p>
+                <button class="px-8 py-3 bg-slate-900 text-white rounded-full hover:bg-indigo-600 transition">Our Philosophy</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-16 px-6 bg-[#050a14] border-t border-slate-800">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+            <div class="col-span-2">
+                <div class="text-2xl font-bold mb-4">AURA<span class="text-indigo-500">.</span></div>
+                <p class="text-slate-500 text-sm max-w-xs">Crafting the future of urban living, one blueprint at a time.</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4">Navigation</h4>
+                <ul class="text-slate-500 space-y-2 text-sm">
+                    <li><a href="#" class="hover:text-white">Projects</a></li>
+                    <li><a href="#" class="hover:text-white">Services</a></li>
+                    <li><a href="#" class="hover:text-white">Contact</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4">Newsletter</h4>
+                <input type="email" placeholder="Enter your email" class="w-full bg-slate-900 border border-slate-800 p-3 rounded-lg mb-2 text-sm">
+                <button class="w-full bg-indigo-600 py-2 rounded-lg text-sm font-bold">Subscribe</button>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // API Integration
+        const API_BASE = 'https://bazz44-aacjg7sot-lakhalhajar75-3482s-projects.vercel.app';
+        const site_tag = 'architect';
+
+        async function loadPortfolio() {
+            const grid = document.getElementById('bento-grid');
+            
+            try {
+                const response = await fetch(`https://bazz44-aacjg7sot-lakhalhajar75-3482s-projects.vercel.app/api/projects`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    });
+                const data = await response.json();
+                
+                // Clear loading state
+                grid.innerHTML = '';
+                
+                // Populate Grid
+                data.slice(0, 4).forEach((item, index) => {
+                    const div = document.createElement('div');
+                    div.className = `bento-item rounded-3xl overflow-hidden relative group ${index === 0 ? 'md:col-span-2 md:row-span-2' : ''}`;
+                    div.innerHTML = `
+                        <img src="${item.image || 'https://images.unsplash.com/photo-1449844908441-8829872d2607'}" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent p-6 flex flex-col justify-end">
+                            <h3 class="text-xl font-bold">${item.title || 'Architectural Concept'}</h3>
+                            <p class="text-xs text-indigo-300 uppercase tracking-widest">${site_tag}</p>
+                        </div>
+                    `;
+                    grid.appendChild(div);
+                });
+            } catch (err) {
+                console.warn('API Unreachable, using fallback UI');
+                // Fallback UI
+                grid.innerHTML = `
+                    <div class="md:col-span-2 md:row-span-2 rounded-3xl bg-slate-800 flex items-center justify-center">Portfolio Item 1</div>
+                    <div class="md:col-span-2 rounded-3xl bg-slate-800 flex items-center justify-center">Portfolio Item 2</div>
+                    <div class="rounded-3xl bg-slate-800 flex items-center justify-center">Item 3</div>
+                    <div class="rounded-3xl bg-slate-800 flex items-center justify-center">Item 4</div>
+                `;
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadPortfolio);
+    </script>
+</body>
+</html>
