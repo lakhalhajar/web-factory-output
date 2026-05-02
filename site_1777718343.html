@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Architecture | Modern Living Spaces</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@700&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+        
+        .mesh-gradient {
+            background: radial-gradient(circle at 50% 50%, #18181b 0%, #09090b 100%);
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-auto-rows: 300px;
+            gap: 1.5rem;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-up { animation: fadeUp 0.8s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 overflow-x-hidden">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 px-8 py-6 flex justify-between items-center glass">
+        <div class="text-2xl font-bold tracking-tighter">AURA<span class="text-amber-500">.</span></div>
+        <div class="hidden md:flex gap-8 text-sm font-medium uppercase tracking-widest">
+            <a href="#" class="hover:text-amber-500 transition">Projects</a>
+            <a href="#" class="hover:text-amber-500 transition">Philosophy</a>
+            <a href="#" class="hover:text-amber-500 transition">Contact</a>
+        </div>
+        <button class="px-6 py-2 bg-white text-zinc-950 text-sm font-bold uppercase tracking-wider hover:bg-amber-500 transition">Inquire</button>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="h-screen flex items-center px-8 pt-20">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div class="animate-fade-up">
+                <h1 class="text-6xl md:text-8xl leading-tight mb-6">Designing <br><span class="text-zinc-500 italic">Tomorrow's</span> Skyline.</h1>
+                <p class="text-zinc-400 text-lg mb-8 max-w-md">We blend raw structural integrity with ethereal aesthetics to create living spaces that breathe.</p>
+                <div class="flex gap-4">
+                    <button class="px-8 py-4 bg-amber-500 text-zinc-950 font-bold uppercase tracking-widest hover:bg-amber-400 transition">View Portfolio</button>
+                </div>
+            </div>
+            <div class="h-[600px] bg-zinc-800 rounded-2xl overflow-hidden shadow-2xl relative">
+                <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop" alt="Architecture" class="w-full h-full object-cover">
+            </div>
+        </div>
+    </header>
+
+    <!-- Features Section -->
+    <section class="py-24 px-8 max-w-7xl mx-auto">
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="p-8 glass rounded-xl hover:border-amber-500/50 transition-all group">
+                <i data-lucide="building-2" class="w-10 h-10 text-amber-500 mb-6"></i>
+                <h3 class="text-2xl mb-4">Structural Mastery</h3>
+                <p class="text-zinc-400">Precision engineering meets artistic vision in every beam and column we place.</p>
+            </div>
+            <div class="p-8 glass rounded-xl hover:border-amber-500/50 transition-all group">
+                <i data-lucide="palette" class="w-10 h-10 text-amber-500 mb-6"></i>
+                <h3 class="text-2xl mb-4">Interior Harmony</h3>
+                <p class="text-zinc-400">Seamless transitions between light, texture, and space for modern living.</p>
+            </div>
+            <div class="p-8 glass rounded-xl hover:border-amber-500/50 transition-all group">
+                <i data-lucide="drafting-compass" class="w-10 h-10 text-amber-500 mb-6"></i>
+                <h3 class="text-2xl mb-4">Sustainable Design</h3>
+                <p class="text-zinc-400">Future-proof architecture that respects the environment and maximizes efficiency.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bento Portfolio Showcase -->
+    <section 
+        x-data="{ tasks: [], loading: true, site_tag: 'architect' }" 
+        x-init="fetch(`https://bazz44-hk1kwabh5-lakhalhajar75-3482s-projects.vercel.app/api/projects`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    })
+                .then(res => res.json())
+                .then(data => { tasks = data; loading = false; })
+                .catch(err => { console.error(err); loading = false; })"
+        class="py-24 px-8 max-w-7xl mx-auto"
+    >
+        <h2 class="text-5xl mb-12 text-center">Selected Works</h2>
+        
+        <div class="bento-grid">
+            <!-- Dynamic Content Area -->
+            <template x-if="loading">
+                <div class="col-span-full text-center text-zinc-500 italic">Loading architectural marvels...</div>
+            </template>
+            
+            <template x-for="(task, index) in tasks" :key="index">
+                <div class="glass rounded-2xl overflow-hidden relative group cursor-pointer" :class="index % 3 === 0 ? 'md:col-span-2' : ''">
+                    <img :src="`https://images.unsplash.com/photo-1518005069967-827473fe3f2c?q=80&w=800&auto=format&fit=crop`" class="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition duration-500">
+                    <div class="absolute bottom-6 left-6">
+                        <h4 class="text-xl font-bold" x-text="task.title || 'Project Name'"></h4>
+                        <p class="text-amber-500 text-sm">View Details →</p>
+                    </div>
+                </div>
+            </template>
+
+            <!-- Fallback Items if API is empty -->
+            <template x-if="tasks.length === 0 && !loading">
+                <div class="col-span-full grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="h-72 glass rounded-2xl flex items-center justify-center border-dashed border border-zinc-700">Project Alpha</div>
+                    <div class="h-72 glass rounded-2xl md:col-span-2 flex items-center justify-center border-dashed border border-zinc-700">Project Beta</div>
+                </div>
+            </template>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-20 px-8 border-t border-zinc-800">
+        <div class="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
+            <div class="col-span-2">
+                <div class="text-2xl font-bold mb-4">AURA</div>
+                <p class="text-zinc-500 max-w-xs">Crafting the future of urban environments with precision and passion.</p>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4 uppercase text-sm tracking-widest">Connect</h4>
+                <ul class="text-zinc-400 space-y-2">
+                    <li>Instagram</li>
+                    <li>LinkedIn</li>
+                    <li>Behance</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-bold mb-4 uppercase text-sm tracking-widest">Newsletter</h4>
+                <input type="email" placeholder="Email address" class="w-full bg-zinc-900 border border-zinc-700 p-3 mb-2 rounded">
+                <button class="w-full bg-zinc-100 text-zinc-950 py-3 font-bold">Subscribe</button>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
