@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aura Architecture | Defining Spaces</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .mesh-gradient { background: radial-gradient(circle at 50% 50%, #1e293b 0%, #0f172a 100%); }
+        .bento-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .bento-card:hover { transform: translateY(-10px); box-shadow: 0 20px 40px rgba(0,0,0,0.3); }
+        @keyframes fade-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade { animation: fade-in 0.8s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 selection:bg-amber-500 selection:text-white">
+
+    <!-- Navbar -->
+    <nav class="fixed w-full z-50 px-6 py-4 flex justify-between items-center glass">
+        <div class="text-2xl font-bold tracking-tighter">AURA<span class="text-amber-500">.</span></div>
+        <div class="hidden md:flex gap-8 text-sm font-medium">
+            <a href="#work" class="hover:text-amber-500 transition">Portfolio</a>
+            <a href="#services" class="hover:text-amber-500 transition">Services</a>
+            <a href="#about" class="hover:text-amber-500 transition">Philosophy</a>
+        </div>
+        <button class="px-6 py-2 bg-white text-slate-900 rounded-full text-sm font-bold hover:bg-amber-500 hover:text-white transition">Inquire</button>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative h-screen flex items-center justify-center overflow-hidden mesh-gradient">
+        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070" class="absolute inset-0 w-full h-full object-cover opacity-30" alt="Architecture Background">
+        <div class="relative z-10 text-center px-4 animate-fade">
+            <h1 class="text-6xl md:text-8xl font-bold mb-6 tracking-tight">Designing <span class="text-amber-500">Tomorrow.</span></h1>
+            <p class="text-lg md:text-xl text-slate-400 mb-10 max-w-2xl mx-auto">We bridge the gap between structural integrity and artistic vision, creating environments that stand the test of time.</p>
+            <div class="flex gap-4 justify-center">
+                <a href="#work" class="px-8 py-4 bg-amber-500 text-slate-900 font-bold rounded-lg hover:scale-105 transition">Explore Projects</a>
+                <a href="#" class="px-8 py-4 bg-white/10 backdrop-blur border border-white/20 font-bold rounded-lg hover:bg-white/20 transition">Learn More</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="services" class="py-24 px-6 max-w-7xl mx-auto">
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="p-8 rounded-2xl glass hover:border-amber-500/50 transition duration-500">
+                <i data-lucide="building-2" class="w-10 h-10 text-amber-500 mb-6"></i>
+                <h3 class="text-xl font-bold mb-4">Urban Design</h3>
+                <p class="text-slate-400">Creating cohesive cityscapes that prioritize flow, community, and sustainable living standards.</p>
+            </div>
+            <div class="p-8 rounded-2xl glass hover:border-amber-500/50 transition duration-500">
+                <i data-lucide="compass" class="w-10 h-10 text-amber-500 mb-6"></i>
+                <h3 class="text-xl font-bold mb-4">Master Planning</h3>
+                <p class="text-slate-400">Strategic development frameworks that balance aesthetic ambition with practical requirements.</p>
+            </div>
+            <div class="p-8 rounded-2xl glass hover:border-amber-500/50 transition duration-500">
+                <i data-lucide="palette" class="w-10 h-10 text-amber-500 mb-6"></i>
+                <h3 class="text-xl font-bold mb-4">Interior Curation</h3>
+                <p class="text-slate-400">Where architecture meets lifestyle. Bespoke interiors tailored to your unique identity.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bento Portfolio Section -->
+    <section id="work" class="py-24 px-6 bg-slate-900" x-data="{ projects: [], loading: true }" x-init="fetch(`https://bazz44-mflxvxi70-lakhalhajar75-3482s-projects.vercel.app/api/projects`, {
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        }
+    }).then(r => r.json()).then(d => { projects = d; loading = false; }).catch(() => { loading = false; projects = [{title: 'Modern Villa', category: 'Residential', image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=800'}, {title: 'City Center', category: 'Commercial', image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800'}] })">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-4xl font-bold mb-12 text-center">Featured Works</h2>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-[300px]">
+                <template x-for="(project, index) in projects" :key="index">
+                    <div class="bento-card relative overflow-hidden rounded-3xl group" :class="index % 3 === 0 ? 'md:col-span-2' : 'md:col-span-1'">
+                        <img :src="project.image || 'https://images.unsplash.com/photo-1503387762-592daf58025e?q=80&w=800'" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" alt="Project">
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 to-transparent p-8 flex flex-col justify-end">
+                            <span class="text-amber-500 text-xs font-bold uppercase tracking-widest" x-text="project.category || 'Architecture'"></span>
+                            <h3 class="text-2xl font-bold" x-text="project.title || 'Project Name'"></h3>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-24 px-6">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center gap-16">
+            <div class="flex-1">
+                <img src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?q=80&w=1000" class="rounded-2xl shadow-2xl" alt="Architect">
+            </div>
+            <div class="flex-1">
+                <h2 class="text-5xl font-bold mb-6">Philosophy of <span class="text-amber-500">Form.</span></h2>
+                <p class="text-slate-400 text-lg mb-6 leading-relaxed">We believe that every structure should be a dialogue between the environment and the inhabitant. Our approach is rooted in minimalism, sustainability, and the profound impact of light on human emotion.</p>
+                <div class="flex gap-6">
+                    <div>
+                        <div class="text-3xl font-bold text-amber-500">12+</div>
+                        <div class="text-sm text-slate-500 uppercase tracking-widest">Years Experience</div>
+                    </div>
+                    <div>
+                        <div class="text-3xl font-bold text-amber-500">450</div>
+                        <div class="text-sm text-slate-500 uppercase tracking-widest">Projects Completed</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-white/10 text-center">
+        <div class="mb-8">
+            <h4 class="text-xl font-bold mb-4">Stay Inspired</h4>
+            <form class="max-w-sm mx-auto flex gap-2">
+                <input type="email" placeholder="Enter your email" class="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 focus:outline-none focus:border-amber-500">
+                <button class="px-6 py-2 bg-amber-500 text-slate-900 rounded-lg font-bold">Join</button>
+            </form>
+        </div>
+        <div class="flex justify-center gap-6 mb-8 text-slate-500">
+            <a href="#" class="hover:text-amber-500"><i data-lucide="twitter"></i></a>
+            <a href="#" class="hover:text-amber-500"><i data-lucide="instagram"></i></a>
+            <a href="#" class="hover:text-amber-500"><i data-lucide="linkedin"></i></a>
+        </div>
+        <p class="text-slate-600 text-sm">&copy; 2024 Aura Architecture. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>
